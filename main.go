@@ -1,8 +1,10 @@
 package main
 
 import (
-	"demo-mod/common"
 	"encoding/json"
+	"go-200lab-g09/common"
+	"go-200lab-g09/module/item/model"
+	ginitem "go-200lab-g09/module/item/transport/gin"
 	"log"
 	"net/http"
 	"strconv"
@@ -27,7 +29,7 @@ func main() {
 
 	// now := time.Now().UTC()
 
-	// item := TodoItem{
+	// item := model.TodoItem{
 	// 	Id:          1,
 	// 	Title:       "Belajar Golang",
 	// 	Description: "Belajar Golang untuk membuat API",
@@ -44,7 +46,7 @@ func main() {
 	// log.Println(string(jsData))
 
 	jsString := `{"id":1,"title":"Belajar Golang","description":"Belajar Golang untuk membuat API","status":"Active","created_at":"2021-10-13T15:04:05Z","updated_at":"2021-10-13T15:04:05Z"}`
-	var item2 TodoItem
+	var item2 model.TodoItem
 	if err := json.Unmarshal([]byte(jsString), &item2); err != nil {
 		log.Fatalln(err)
 	}
@@ -61,9 +63,9 @@ func main() {
 		// >> all routes defined under this group will have the prefix /api/v1/items.
 		items := v1.Group("items")
 		{
-			items.POST("", CreateItem(db))
+			items.POST("", ginitem.CreateItem(db))
 			items.GET("", ListItem(db))
-			items.GET("/:id", GetItem(db))
+			items.GET("/:id", ginitem.GetItem(db))
 			items.PATCH("/:id", UpdateItem(db))
 			items.DELETE("/:id", DeleteItem((db)))
 		}
@@ -83,67 +85,6 @@ func main() {
 	// fmt.Println(os.Getenv("APP_NAME"))
 }
 
-// > create a handler for: POST /api/v1/items
-// func CreateItem() gin.HandlerFunc {
-// CreateItem is a handler function that creates a new todo item in the database.
-// It takes a *gorm.DB as a parameter and returns a gin.HandlerFunc.
-// The function parses JSON from the HTTP request body to a TodoItem struct,
-// validates the data, and returns an error response if the data is invalid.
-// If the data is valid, it creates a new todo item in the database.
-func CreateItem(db *gorm.DB) func(ctx *gin.Context) {
-	return func(c *gin.Context) {
-		// step 1: Parse JSON from HTTP request body to TodoItem struct
-		var itemData TodoItemCreation
-
-		// step 2: Validate the data
-		// >> The ShouldBind method automatically infers the content type and binds the data into the type of the provided struct.
-		// >> The & operator before itemData is used to pass the memory address of itemData to the ShouldBind method. This means any changes made to itemData inside the ShouldBind method will affect the original itemData variable.
-		// >> If ShouldBind encounters an error during the binding process (for example, if the provided JSON does not match the structure of itemData), it will return a non-nil error. The err != nil check will then evaluate to true and the code inside the if block will be executed.
-		if err := c.ShouldBind(&itemData); err != nil {
-			// >> c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(),}) is called. This sends a JSON response to the client with a status code of 400 (Bad Request). The JSON body of the response contains a single property error, which is set to the string representation of the error returned by ShouldBind. The gin.H function is a shortcut for creating a map in Go, which in this case is used to create the JSON object.
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		// step 3: use db.Create to
-		if err := db.Create(&itemData).Error; err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		// step 4: print data of the inserted record
-		c.JSON(http.StatusOK, common.SimpleSuccessResponse(itemData))
-	}
-}
-
-func GetItem(db *gorm.DB) func(ctx *gin.Context) {
-	return func(c *gin.Context) {
-		var itemData TodoItem
-
-		id, err := strconv.Atoi(c.Param("id"))
-
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		if err := db.Where("id = ?", id).First(&itemData).Error; err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		c.JSON(http.StatusOK, common.SimpleSuccessResponse(itemData))
-	}
-}
-
 func UpdateItem(db *gorm.DB) func(ctx *gin.Context) {
 	return func(c *gin.Context) {
 
@@ -156,7 +97,7 @@ func UpdateItem(db *gorm.DB) func(ctx *gin.Context) {
 			return
 		}
 
-		var updateData TodoItem
+		var updateData model.TodoItem
 
 		if err := c.ShouldBind(&updateData); err != nil {
 			// >> c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(),}) is called. This sends a JSON response to the client with a status code of 400 (Bad Request). The JSON body of the response contains a single property error, which is set to the string representation of the error returned by ShouldBind. The gin.H function is a shortcut for creating a map in Go, which in this case is used to create the JSON object.
@@ -191,7 +132,7 @@ func DeleteItem(db *gorm.DB) func(ctx *gin.Context) {
 
 		deletedStatus := "Deleted"
 
-		if err := db.Where("id = ?", id).Updates(&TodoItemUpdate{Status: &deletedStatus}).Error; err != nil {
+		if err := db.Where("id = ?", id).Updates(&model.TodoItemUpdate{Status: &deletedStatus}).Error; err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),
 			})
@@ -216,19 +157,19 @@ func ListItem(db *gorm.DB) func(ctx *gin.Context) {
 
 		paging.Process()
 
-		var result []TodoItem
+		var result []model.TodoItem
 
-		db = db.Table(TodoItem{}.TableName()).Where("status <> ?", "Deleted")
+		db = db.Table(model.TodoItem{}.TableName()).Where("status <> ?", "Deleted")
 
 		// SELECT COUNT(id) FROM todo_items --> paging.Total
-		if err := db.Table(TodoItem{}.TableName()).Select("id").Count(&paging.Total).Error; err != nil {
+		if err := db.Table(model.TodoItem{}.TableName()).Select("id").Count(&paging.Total).Error; err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),
 			})
 		}
 
 		// SELECT * FROM todo_items ORDER BY id ASC LIMIT paging.Limit OFFSET (paging.Page - 1) * paging.Limit
-		if err := db.Table(TodoItem{}.TableName()).
+		if err := db.Table(model.TodoItem{}.TableName()).
 			Select("*").
 			Offset((paging.Page - 1) * paging.Limit).
 			Limit(paging.Limit).
