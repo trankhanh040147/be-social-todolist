@@ -66,7 +66,7 @@ func main() {
 			items.POST("", ginitem.CreateItem(db))
 			items.GET("", ListItem(db))
 			items.GET("/:id", ginitem.GetItem(db))
-			items.PATCH("/:id", UpdateItem(db))
+			items.PATCH("/:id", ginitem.UpdateItem(db))
 			items.DELETE("/:id", DeleteItem((db)))
 		}
 	}
@@ -83,39 +83,6 @@ func main() {
 
 	// fmt.Println("Hello, World!")
 	// fmt.Println(os.Getenv("APP_NAME"))
-}
-
-func UpdateItem(db *gorm.DB) func(ctx *gin.Context) {
-	return func(c *gin.Context) {
-
-		id, err := strconv.Atoi(c.Param("id"))
-
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		var updateData model.TodoItem
-
-		if err := c.ShouldBind(&updateData); err != nil {
-			// >> c.JSON(http.StatusBadRequest, gin.H{"error": err.Error(),}) is called. This sends a JSON response to the client with a status code of 400 (Bad Request). The JSON body of the response contains a single property error, which is set to the string representation of the error returned by ShouldBind. The gin.H function is a shortcut for creating a map in Go, which in this case is used to create the JSON object.
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		if err := db.Where("id = ?", id).Updates(&updateData).Error; err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": err.Error(),
-			})
-			return
-		}
-
-		c.JSON(http.StatusOK, common.SimpleSuccessResponse(updateData))
-	}
 }
 
 func DeleteItem(db *gorm.DB) func(ctx *gin.Context) {
