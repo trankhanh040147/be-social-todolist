@@ -63,7 +63,7 @@ func main() {
 		items := v1.Group("items")
 		{
 			items.POST("", ginitem.CreateItem(db))
-			items.GET("", ListItem(db))
+			items.GET("", ginitem.ListItem(db))
 			items.GET("/:id", ginitem.GetItem(db))
 			items.PATCH("/:id", ginitem.UpdateItem(db))
 			items.DELETE("/:id", ginitem.DeleteItem((db)))
