@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"go-200lab-g09/common"
 	"go-200lab-g09/module/item/model"
 )
 
@@ -19,11 +20,11 @@ func NewCreateItemBiz(store CreateItemStorage) *createItemBiz {
 
 func (biz *createItemBiz) CreateNewItem(ctx context.Context, data *model.TodoItemCreation) error {
 	if err := data.Validate(); err != nil {
-		return err
+		return common.ErrValidation(err)
 	}
 
 	if err := biz.store.CreateItem(ctx, data); err != nil {
-		return err
+		return common.ErrCannotCreateEntity(model.EntityName, err)
 	}
 
 	return nil

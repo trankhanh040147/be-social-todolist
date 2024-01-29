@@ -2,6 +2,7 @@ package biz
 
 import (
 	"context"
+	"go-200lab-g09/common"
 	"go-200lab-g09/module/item/model"
 )
 
@@ -26,11 +27,11 @@ func (biz *updateItemBiz) UpdateItemById(ctx context.Context, id int, dataUpdate
 	}
 
 	if data.Status == "Deleted" {
-		return model.ErrItemIsDeleted
+		return common.ErrEntityDeleted(model.EntityName)
 	}
 
 	if err := biz.store.UpdateItem(ctx, map[string]interface{}{"id": id}, dataUpdate); err != nil {
-		return err
+		return common.ErrCannotUpdateEntity(model.EntityName, err)
 	}
 
 	return nil
