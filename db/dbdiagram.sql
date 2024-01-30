@@ -176,4 +176,32 @@ Table Tasks {
     updated_at timestamp
 }
 
+-- table Comments
+-- Comments may on Tasks, or Projects
+Table Comments {
+    id int [pk, increment] // auto-increment
+    task_id int
+    project_id int
+    user_id int
+    content varchar
+    created_at timestamp
+    updated_at timestamp
+}
+
+-- table Attachments
+-- Attachments will be on Tasks, or Projects
+Table Attachments {
+    id int [pk, increment] // auto-increment
+    task_id int
+    project_id int
+    user_id int
+    file_name varchar
+    file_path varchar
+    created_at timestamp
+    updated_at timestamp
+}
+
+-- table Tags
+
+
 -- [Activities]
