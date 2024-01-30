@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"go-200lab-g09/common"
+	"go-200lab-g09/middleware"
 	"go-200lab-g09/module/item/model"
 	ginitem "go-200lab-g09/module/item/transport/gin"
 	"log"
@@ -56,6 +57,7 @@ func main() {
 	// > set up HTTP routes for a RESTful API.
 	// >> creates a new Gin router with default middleware. The default middleware includes logging and recovery middleware, which logs all requests and recovers from any panics, respectively.
 	r := gin.Default()
+	r.Use(middleware.Recover())
 	// >> creates a new route group. All routes defined under this group will have the prefix /api/v1.
 	v1 := r.Group("/api/v1")
 	{

@@ -22,7 +22,7 @@ func Recover() gin.HandlerFunc {
 				// case: Not AppErr, just root error.
 				appErr := common.ErrInternal(err.(error))
 				c.AbortWithStatusJSON(appErr.StatusCode, appErr)
-				// panic(err)
+				panic(err) // show stack trace
 				return
 			}
 		}()
