@@ -6,6 +6,7 @@ import (
 	"go-200lab-g09/middleware"
 	"go-200lab-g09/module/item/model"
 	ginitem "go-200lab-g09/module/item/transport/gin"
+	"go-200lab-g09/module/upload"
 	"log"
 	"net/http"
 
@@ -58,9 +59,14 @@ func main() {
 	// >> creates a new Gin router with default middleware. The default middleware includes logging and recovery middleware, which logs all requests and recovers from any panics, respectively.
 	r := gin.Default()
 	r.Use(middleware.Recover())
+
+	r.Static("/static", "./static")
 	// >> creates a new route group. All routes defined under this group will have the prefix /api/v1.
 	v1 := r.Group("/api/v1")
 	{
+		// >> creates a new route handler /upload
+		v1.PUT("/upload", upload.Upload(db))
+
 		// >> all routes defined under this group will have the prefix /api/v1/items.
 		items := v1.Group("items")
 		{
