@@ -3,10 +3,12 @@ package main
 import (
 	"encoding/json"
 	"go-200lab-g09/common"
+	"go-200lab-g09/component/tokenprovider/jwt"
 	"go-200lab-g09/middleware"
 	"go-200lab-g09/module/item/model"
 	ginitem "go-200lab-g09/module/item/transport/gin"
 	"go-200lab-g09/module/upload"
+	"go-200lab-g09/module/user/storage"
 	ginuser "go-200lab-g09/module/user/transport/gin"
 	"log"
 	"net/http"
@@ -22,6 +24,9 @@ func main() {
 	// DB_CONNECTION from launch.json
 	// dsn := os.Getenv("DB_CONNECTION")
 	dsn := "root:my-secret-pw@tcp(127.0.0.1:3309)/social-todo-list?charset=utf8mb4&parseTime=True&loc=Local"
+	// systemSecret := os.Getenv("SECRET")
+	systemSecret := "iTaskSecret2024"
+
 	db, err := gorm.Open(mysql.Open(string(dsn)), &gorm.Config{})
 	if err != nil {
 		log.Fatalln(err)
@@ -29,23 +34,10 @@ func main() {
 	db = db.Debug()
 	log.Println("DB Connection: ", db)
 
-	// now := time.Now().UTC()
-
-	// item := model.TodoItem{
-	// 	Id:          1,
-	// 	Title:       "Belajar Golang",
-	// 	Description: "Belajar Golang untuk membuat API",
-	// 	Status:      "Active",
-	// 	CreatedAt:   &now,
-	// 	UpdatedAt:   &now,
-	// }
-
-	// jsData, err := json.Marshal(item)
-
-	// if err != nil {
-	// 	log.Fatalln(err)
-	// }
-	// log.Println(string(jsData))
+	// -----------------------------------------------
+	authStore := storage.NewSQLStore(db)
+	tokenProvider := jwt.NewTokenJwtProvider("jwt", systemSecret)
+	middlewareAuth := middleware.RequiredAuth(authStore, tokenProvider)
 
 	jsString := `{"id":1,"title":"Belajar Golang","description":"Belajar Golang untuk membuat API","status":"Active","created_at":"2021-10-13T15:04:05Z","updated_at":"2021-10-13T15:04:05Z"}`
 	var item2 model.TodoItem
@@ -69,10 +61,11 @@ func main() {
 		v1.PUT("/upload", upload.Upload(db))
 
 		v1.POST("/register", ginuser.Register(db))
-		v1.POST("/login", ginuser.Login(db))
+		v1.POST("/login", ginuser.Login(db, tokenProvider))
+		v1.GET("/profile", middlewareAuth, ginuser.Profile())
 
 		// >> all routes defined under this group will have the prefix /api/v1/items.
-		items := v1.Group("items")
+		items := v1.Group("items", middlewareAuth)
 		{
 			items.POST("", ginitem.CreateItem(db))
 			items.GET("", ginitem.ListItem(db))
