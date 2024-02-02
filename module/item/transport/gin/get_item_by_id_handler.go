@@ -1,7 +1,6 @@
 package ginitem
 
 import (
-	"fmt"
 	"go-200lab-g09/common"
 	"go-200lab-g09/module/item/biz"
 	"go-200lab-g09/module/item/storage"
@@ -20,7 +19,7 @@ func GetItem(db *gorm.DB) func(ctx *gin.Context) {
 			panic(common.ErrInvalidRequest(err))
 		}
 
-		fmt.Println([]int{}[0])
+		// fmt.Println([]int{}[0])
 
 		// dependency
 		store := storage.NewSQLStore(db)

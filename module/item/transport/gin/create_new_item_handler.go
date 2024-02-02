@@ -23,6 +23,9 @@ func CreateItem(db *gorm.DB) func(ctx *gin.Context) {
 			return
 		}
 
+		request := c.MustGet(common.CurrentUser).(common.Requester)
+		itemData.UserId = request.GetUserId()
+
 		store := storage.NewSQLStore(db)
 		business := biz.NewCreateItemBiz(store)
 
