@@ -73,6 +73,7 @@ type User struct {
 	FirstName string   `json:"first_name" gorm:"column:first_name;"`
 	Phone     string   `json:"phone" gorm:"column:phone;"`
 	Role      UserRole `json:"role" gorm:"column:role;"`
+	Status    int      `json:"status" gorm:"column:status;"`
 }
 
 func (u *User) GetUserId() int {
@@ -83,8 +84,8 @@ func (u *User) GetEmail() string {
 	return u.Email
 }
 
-func (u *User) GetRole() int {
-	return int(u.Role)
+func (u *User) GetRole() string {
+	return u.Role.String()
 }
 
 func (User) TableName() string {

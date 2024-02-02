@@ -1,6 +1,10 @@
 package common
 
-import "fmt"
+import (
+	"fmt"
+)
+
+const CurrentUser = "current_user"
 
 func Recovery() {
 	if r := recover(); r != nil {
@@ -19,4 +23,14 @@ func (p TokenPayLoad) UserId() int {
 
 func (p TokenPayLoad) Role() string {
 	return p.URole
+}
+
+type Requester interface {
+	GetUserId() int
+	GetRole() string
+	GetEmail() string
+}
+
+func IsAdminOrMod(requester Requester) bool {
+	return requester.GetRole() == "admin" || requester.GetRole() == "mod"
 }
