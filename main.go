@@ -7,6 +7,7 @@ import (
 	"go-200lab-g09/module/item/model"
 	ginitem "go-200lab-g09/module/item/transport/gin"
 	"go-200lab-g09/module/upload"
+	ginuser "go-200lab-g09/module/user/transport/gin"
 	"log"
 	"net/http"
 
@@ -66,6 +67,9 @@ func main() {
 	{
 		// >> creates a new route handler /upload
 		v1.PUT("/upload", upload.Upload(db))
+
+		v1.POST("/register", ginuser.Register(db))
+		v1.POST("/login", ginuser.Login(db))
 
 		// >> all routes defined under this group will have the prefix /api/v1/items.
 		items := v1.Group("items")
