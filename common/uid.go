@@ -8,10 +8,14 @@ import (
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
+	"github.com/globalsign/mgo/bson"
 )
 
-// UID is method to generate a virtual unique identifier for whole system
-// its structure contains 62 bit: LocalID(32bit) - ObjectType(10bit) - ShardID(18bit)
+// UID is method to generate an virtual unique identifier for whole system
+// its structure contains 62 bits:  LocalID - ObjectType - ShardID
+// 32 bits for Local ID, max (2^32) - 1
+// 10 bits for Object Type
+// 18 bits for Shard ID
 
 type UID struct {
 	localID    uint32
@@ -19,21 +23,16 @@ type UID struct {
 	shardID    uint32
 }
 
-func NewUID(localID uint32, objectType int, shardID uint32) UID {
+func NewUID(localID uint32, objType int, shardID uint32) UID {
 	return UID{
 		localID:    localID,
-		objectType: objectType,
+		objectType: objType,
 		shardID:    shardID,
 	}
 }
 
-// Shard: 1, Object: 1, LocalID: 1 => 0001 0001 0001
-// 1 << 8 = 0001 0000 0000
-// 1 << 4 = 0001 0000
-// 1 << 0 = 0001
 func (uid UID) String() string {
 	val := uint64(uid.localID)<<28 | uint64(uid.objectType)<<18 | uint64(uid.shardID)<<0
-	// return base58.Encode([]byte(fmt.Sprintf("#{val}")))
 	return base58.Encode([]byte(fmt.Sprintf("%v", val)))
 }
 
@@ -41,15 +40,21 @@ func (uid UID) GetLocalID() uint32 {
 	return uid.localID
 }
 
-func (uid UID) GetObjectType() int {
-	return uid.objectType
-}
-
 func (uid UID) GetShardID() uint32 {
 	return uid.shardID
 }
 
+func (uid UID) GetObjectType() int {
+	return uid.objectType
+}
+
 func DecomposeUID(s string) (UID, error) {
+	// 2024/02/05 20:48:52 strconv.ParseUint: parsing "\x00": invalid syntax
+
+	if s == "" {
+		return UID{}, errors.New("empty uid")
+	}
+
 	uid, err := strconv.ParseUint(s, 10, 64)
 
 	if err != nil {
@@ -60,15 +65,13 @@ func DecomposeUID(s string) (UID, error) {
 		return UID{}, errors.New("wrong uid")
 	}
 
-	// x = 1110 1110 0101 => x >> 4 = 1110 1110 & 0000 1111 = 1110
 	u := UID{
 		localID:    uint32(uid >> 28),
-		objectType: int((uid >> 18) & 0x3FF),
-		shardID:    uint32(uid & 0x3FFFF),
+		objectType: int(uid >> 18 & 0x3FF),
+		shardID:    uint32(uid >> 0 & 0x3FFFF),
 	}
 
 	return u, nil
-
 }
 
 func FromBase58(s string) (UID, error) {
@@ -87,8 +90,8 @@ func (uid *UID) UnmarshalJSON(data []byte) error {
 	}
 
 	uid.localID = decodeUID.localID
-	uid.objectType = decodeUID.objectType
 	uid.shardID = decodeUID.shardID
+	uid.objectType = decodeUID.objectType
 
 	return nil
 }
@@ -97,13 +100,11 @@ func (uid *UID) Value() (driver.Value, error) {
 	if uid == nil {
 		return nil, nil
 	}
-
 	return int64(uid.localID), nil
 }
 
 func (uid *UID) Scan(value interface{}) error {
 	if value == nil {
-		*uid = UID{}
 		return nil
 	}
 
@@ -113,17 +114,17 @@ func (uid *UID) Scan(value interface{}) error {
 	case int:
 		i = uint32(t)
 	case int8:
-		i = uint32(t)
+		i = uint32(t) // standardizes across systems
 	case int16:
-		i = uint32(t)
+		i = uint32(t) // standardizes across systems
 	case int32:
-		i = uint32(t)
+		i = uint32(t) // standardizes across systems
 	case int64:
-		i = uint32(t)
+		i = uint32(t) // standardizes across systems
 	case uint8:
-		i = uint32(t)
+		i = uint32(t) // standardizes across systems
 	case uint16:
-		i = uint32(t)
+		i = uint32(t) // standardizes across systems
 	case uint32:
 		i = t
 	case uint64:
@@ -135,10 +136,25 @@ func (uid *UID) Scan(value interface{}) error {
 		}
 		i = uint32(a)
 	default:
-		return errors.New("invalid scan Source")
+		return errors.New("invalid Scan Source")
 	}
 
 	*uid = NewUID(i, 0, 1)
 
 	return nil
+}
+
+func (uid *UID) GetBSON() (interface{}, error) {
+	if uid == nil {
+		return nil, nil
+	}
+	return uid.localID, nil
+}
+
+func (uid *UID) SetBSON(raw bson.Raw) error {
+	if len(raw.Data) == 0 {
+		return nil
+	}
+
+	return raw.Unmarshal(&uid.localID)
 }
