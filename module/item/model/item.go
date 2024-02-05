@@ -28,13 +28,15 @@ type TodoItem struct {
 // >> Why it do not have receiver like (t TodoItem) ? --> it apply for all TodoItem objects
 func (TodoItem) TableName() string { return "todo_items" }
 
-func (i *TodoItem) Mask() {
-	i.SQLModel.Mask(common.DbTypeItem)
+// fea_FakeID
 
-	if v := i.Owner; v != nil {
-		v.Mask()
-	}
-}
+// func (i *TodoItem) Mask() {
+// 	i.SQLModel.Mask(common.DbTypeItem)
+
+// 	if v := i.Owner; v != nil {
+// 		v.Mask()
+// 	}
+// }
 
 type TodoItemCreation struct {
 	Id          int           `json:"id" gorm:"column:id;"`
