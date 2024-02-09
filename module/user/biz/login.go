@@ -3,8 +3,8 @@ package biz
 import (
 	"context"
 	"go-200lab-g09/common"
-	"go-200lab-g09/component/tokenprovider"
 	"go-200lab-g09/module/user/model"
+	"go-200lab-g09/plugin/tokenprovider"
 )
 
 type LoginStorage interface {
@@ -13,12 +13,12 @@ type LoginStorage interface {
 
 type loginBusiness struct {
 	storeUser     LoginStorage
-	tokenProvider tokenprovider.Provider
+	tokenProvider tokenprovider.TokenProvider
 	hasher        Hasher
 	expiry        int
 }
 
-func NewLoginBusiness(storeUser LoginStorage, tokenProvider tokenprovider.Provider,
+func NewLoginBusiness(storeUser LoginStorage, tokenProvider tokenprovider.TokenProvider,
 	hasher Hasher, expiry int) *loginBusiness {
 	return &loginBusiness{
 		storeUser:     storeUser,
