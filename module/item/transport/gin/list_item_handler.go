@@ -7,12 +7,11 @@ import (
 	"go-200lab-g09/module/item/storage"
 	"net/http"
 
-	goservice "github.com/200Lab-Education/go-sdk"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-func ListItem(serviceCtx goservice.ServiceContext) func(ctx *gin.Context) {
+func ListItem(db *gorm.DB) func(ctx *gin.Context) {
 	return func(c *gin.Context) {
 		var queryString struct {
 			common.Paging
@@ -28,7 +27,6 @@ func ListItem(serviceCtx goservice.ServiceContext) func(ctx *gin.Context) {
 
 		queryString.Paging.Process()
 
-		db := serviceCtx.MustGet(common.PluginDBMain).(*gorm.DB)
 		requester := c.MustGet(common.CurrentUser).(common.Requester)
 		store := storage.NewSQLStore(db)
 		business := biz.NewListItemBiz(store, requester)

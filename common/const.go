@@ -13,12 +13,6 @@ const (
 	DbTypeUser DbType = 2
 )
 
-const (
-	PluginDBMain = "mysql"
-	PluginJWT    = "jwt"
-	PluginR2     = "r2"
-)
-
 func Recovery() {
 	if r := recover(); r != nil {
 		fmt.Println("Recovered:", r)

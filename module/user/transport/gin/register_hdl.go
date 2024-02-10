@@ -7,12 +7,11 @@ import (
 	"go-200lab-g09/module/user/storage"
 	"net/http"
 
-	goservice "github.com/200Lab-Education/go-sdk"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-func Register(serviceCtx goservice.ServiceContext) func(*gin.Context) {
+func Register(db *gorm.DB) func(*gin.Context) {
 	return func(c *gin.Context) {
 		var data model.UserCreate
 
@@ -20,7 +19,6 @@ func Register(serviceCtx goservice.ServiceContext) func(*gin.Context) {
 			panic(err)
 		}
 
-		db := serviceCtx.MustGet(common.PluginDBMain).(*gorm.DB)
 		store := storage.NewSQLStore(db)
 		md5 := common.NewMd5Hash()
 		biz := biz.NewRegisterBusiness(store, md5)

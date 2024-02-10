@@ -5,11 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"go-200lab-g09/common"
+	"go-200lab-g09/component/tokenprovider"
 	"go-200lab-g09/module/user/model"
-	"go-200lab-g09/plugin/tokenprovider"
 	"strings"
 
-	goservice "github.com/200Lab-Education/go-sdk"
 	"github.com/gin-gonic/gin"
 )
 
@@ -39,7 +38,7 @@ func extractTokenFromHeaderString(s string) (string, error) {
 // 1. Get token from header
 // 2. Validate token and parse to payload
 // 3. From the token payload, use user_id to find user in db
-func RequiredAuth(store AuthenStore, serviceCtx goservice.ServiceContext) func(c *gin.Context) {
+func RequiredAuth(store AuthenStore, tokenProvider tokenprovider.Provider) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		token, err := extractTokenFromHeaderString(c.GetHeader("Authorization"))
 
@@ -47,7 +46,8 @@ func RequiredAuth(store AuthenStore, serviceCtx goservice.ServiceContext) func(c
 			panic(err)
 		}
 
-		tokenProvider := serviceCtx.MustGet(common.PluginJWT).(tokenprovider.TokenProvider)
+		//db := appCtx.GetMailDBConnection()
+		//store := userstore.NewSQLStore(db)
 
 		payload, err := tokenProvider.Validate(token)
 		if err != nil {

@@ -8,12 +8,11 @@ import (
 	"net/http"
 	"strconv"
 
-	goservice "github.com/200Lab-Education/go-sdk"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
-func UpdateItem(serviceCtx goservice.ServiceContext) func(ctx *gin.Context) {
+func UpdateItem(db *gorm.DB) func(ctx *gin.Context) {
 	return func(c *gin.Context) {
 		var data model.TodoItemUpdate
 		id, err := strconv.Atoi(c.Param("id"))
@@ -33,7 +32,6 @@ func UpdateItem(serviceCtx goservice.ServiceContext) func(ctx *gin.Context) {
 			return
 		}
 
-		db := serviceCtx.MustGet(common.PluginDBMain).(*gorm.DB)
 		requester := c.MustGet(common.CurrentUser).(common.Requester)
 
 		store := storage.NewSQLStore(db)
