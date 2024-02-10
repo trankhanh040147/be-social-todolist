@@ -6,13 +6,14 @@ import (
 	"net/http"
 	"time"
 
+	goservice "github.com/200Lab-Education/go-sdk"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-func Upload(db *gorm.DB) func(ctx *gin.Context) {
+func UploadLocal(serviceCtx goservice.ServiceContext) func(ctx *gin.Context) {
 	return func(c *gin.Context) {
 		fileHeader, err := c.FormFile("file")
+		// db := serviceCtx.MustGet(common.PluginDBMain).(*gorm.DB)
 
 		if err != nil {
 			panic(common.ErrInvalidRequest(err))
