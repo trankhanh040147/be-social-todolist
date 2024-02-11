@@ -2,11 +2,14 @@ package cmd
 
 import (
 	"fmt"
+	"go-200lab-g09/plugin/simple"
+	"log"
 	"os"
 
 	"go-200lab-g09/common"
 	"go-200lab-g09/middleware"
 	ginitem "go-200lab-g09/module/item/transport/gin"
+	ginuserlikeitem "go-200lab-g09/module/userlikeitem/transport"
 
 	ginupload "go-200lab-g09/module/upload/transport/gin"
 	userstorage "go-200lab-g09/module/user/storage"
@@ -28,6 +31,7 @@ func newService() goservice.Service {
 		goservice.WithInitRunnable(sdkgorm.NewGormDB("main.mysql", common.PluginDBMain)),
 		goservice.WithInitRunnable(jwt.NewJWTProvider(common.PluginJWT)),
 		goservice.WithInitRunnable(uploadprovider.NewR2Provider(common.PluginR2)),
+		goservice.WithInitRunnable(simple.NewSimplePlugin("simple")),
 	)
 
 	return service
@@ -47,13 +51,17 @@ var rootCmd = &cobra.Command{
 		service.HTTPServer().AddHandler(func(engine *gin.Engine) {
 			engine.Use(middleware.Recover())
 
+			log.Println(service.MustGet("simple").(interface {
+				GetValue() string
+			}).GetValue())
+
 			db := service.MustGet(common.PluginDBMain).(*gorm.DB)
 
 			authStore := userstorage.NewSQLStore(db)
 			authMiddleware := middleware.RequiredAuth(authStore, service)
 
 			engine.Static("/static", "./static")
-			v1 := engine.Group("/v1")
+			v1 := engine.Group("/api/v1")
 			{
 				v1.POST("/register", ginuser.Register(service))
 				v1.POST("/login", ginuser.Login(service))
@@ -72,7 +80,12 @@ var rootCmd = &cobra.Command{
 					items.GET("/:id", ginitem.GetItem(service))
 					items.PATCH("/:id", ginitem.UpdateItem(service))
 					items.DELETE("/:id", ginitem.DeleteItem(service))
+
+					items.POST("/:id/like", ginuserlikeitem.LikeItem(service))
+					items.DELETE("/:id/unlike", ginuserlikeitem.UnlikeItem(service))
+					items.GET("/:id/liked-users", ginuserlikeitem.ListLikedUsers(service))
 				}
+
 			}
 		})
 

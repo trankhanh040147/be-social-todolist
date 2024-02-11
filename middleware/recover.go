@@ -15,7 +15,7 @@ func Recover() gin.HandlerFunc {
 				// case: Error from business logic, or db
 				if appErr, ok := err.(*common.AppError); ok {
 					c.AbortWithStatusJSON(appErr.StatusCode, appErr)
-					// panic(err)
+					panic(err)
 					return
 				}
 
