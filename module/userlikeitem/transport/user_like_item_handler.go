@@ -6,7 +6,6 @@ import (
 	"go-200lab-g09/module/userlikeitem/model"
 	"go-200lab-g09/module/userlikeitem/storage"
 	"net/http"
-	"strconv"
 	"time"
 
 	goservice "github.com/200Lab-Education/go-sdk"
@@ -16,8 +15,8 @@ import (
 
 func LikeItem(serviceCtx goservice.ServiceContext) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		id, err := strconv.Atoi(ctx.Param("id"))
-		// id, err := common.FromBase58(ctx.Param("id")) // fake_id
+		//id, err := strconv.Atoi(ctx.Param("id"))
+		id, err := common.UIDFromBase58(ctx.Param("id"))
 		if err != nil {
 			panic(common.ErrInvalidRequest(err))
 		}
@@ -31,9 +30,8 @@ func LikeItem(serviceCtx goservice.ServiceContext) gin.HandlerFunc {
 
 		if err := business.LikeItem(ctx.Request.Context(), &model.Like{
 			UserId: requester.GetUserId(),
-			// fake_id
-			// ItemId:    int(id.GetLocalID()),
-			ItemId:    id,
+			ItemId: int(id.GetLocalID()),
+			//ItemId:    id,
 			CreatedAt: &now,
 		}); err != nil {
 			panic(err)

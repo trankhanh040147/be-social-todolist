@@ -17,7 +17,7 @@ const (
 
 type TodoItem struct {
 	common.SQLModel                    // embed struct
-	UserId          int                `json:"user_id" gorm:"column:user_id;"`
+	UserId          int                `json:"-" gorm:"column:user_id;"`
 	Title           string             `json:"title" gorm:"column:title;"`
 	Description     string             `json:"description" gorm:"column:;description"`
 	Status          string             `json:"status" gorm:"column:status;"`
@@ -30,13 +30,13 @@ func (TodoItem) TableName() string { return "todo_items" }
 
 // fea_FakeID
 
-// func (i *TodoItem) Mask() {
-// 	i.SQLModel.Mask(common.DbTypeItem)
+func (i *TodoItem) Mask() {
+	i.SQLModel.Mask(common.DbTypeItem)
 
-// 	if v := i.Owner; v != nil {
-// 		v.Mask()
-// 	}
-// }
+	if v := i.Owner; v != nil {
+		v.Mask()
+	}
+}
 
 type TodoItemCreation struct {
 	Id          int           `json:"id" gorm:"column:id;"`

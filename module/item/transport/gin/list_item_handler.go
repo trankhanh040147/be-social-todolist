@@ -45,9 +45,9 @@ func ListItem(serviceCtx goservice.ServiceContext) func(ctx *gin.Context) {
 
 		// fea_FakeID
 
-		// for i := range result {
-		// 	result[i].Mask()
-		// }
+		for i := range result {
+			result[i].Mask()
+		}
 
 		c.JSON(http.StatusOK, common.NewSuccessResponse(result, queryString.Paging, queryString.Filter))
 	}

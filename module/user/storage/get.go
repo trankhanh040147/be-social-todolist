@@ -2,6 +2,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"go-200lab-g09/common"
 	"go-200lab-g09/module/user/model"
 
@@ -18,7 +19,10 @@ func (s *sqlStore) FindUser(ctx context.Context, conditions map[string]interface
 	var user model.User
 
 	if err := db.Where(conditions).First(&user).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
+		//if err == gorm.ErrRecordNotFound {
+		//	return nil, common.RecordNotFound
+		//}
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, common.RecordNotFound
 		}
 

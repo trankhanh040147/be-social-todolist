@@ -4,11 +4,11 @@ import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 
 	"github.com/btcsuite/btcutil/base58"
-	"github.com/globalsign/mgo/bson"
 )
 
 // UID is method to generate an virtual unique identifier for whole system
@@ -23,17 +23,12 @@ type UID struct {
 	shardID    uint32
 }
 
-func NewUID(localID uint32, objType int, shardID uint32) UID {
+func NewUID(localID uint32, objectType int, shardID uint32) UID {
 	return UID{
 		localID:    localID,
-		objectType: objType,
+		objectType: objectType,
 		shardID:    shardID,
 	}
-}
-
-func (uid UID) String() string {
-	val := uint64(uid.localID)<<28 | uint64(uid.objectType)<<18 | uint64(uid.shardID)<<0
-	return base58.Encode([]byte(fmt.Sprintf("%v", val)))
 }
 
 func (uid UID) GetLocalID() uint32 {
@@ -48,15 +43,20 @@ func (uid UID) GetObjectType() int {
 	return uid.objectType
 }
 
+// Shard: 1, Object: 1, ID: 1 => 0001 0001 0001
+// 1 << 8 =	0001 0000 0000
+// 1 << 4 = 	    1 0000
+// 1 << 0 = 	    	 1
+//
+//	=> 0001 0001 0001
+func (uid UID) String() string {
+	val := uint64(uid.localID)<<28 | uint64(uid.objectType)<<18 | uint64(uid.shardID)<<0
+	return base58.Encode([]byte(fmt.Sprintf("%v", val)))
+	//return fmt.Sprintf("%X", val)
+}
+
 func DecomposeUID(s string) (UID, error) {
-	// 2024/02/05 20:48:52 strconv.ParseUint: parsing "\x00": invalid syntax
-
-	if s == "" {
-		return UID{}, errors.New("empty uid")
-	}
-
 	uid, err := strconv.ParseUint(s, 10, 64)
-
 	if err != nil {
 		return UID{}, err
 	}
@@ -64,6 +64,9 @@ func DecomposeUID(s string) (UID, error) {
 	if (1 << 18) > uid {
 		return UID{}, errors.New("wrong uid")
 	}
+
+	// x = 1110 1110 0101
+	// => x >> 4 = 1110 1110 & 0000 1111 = 1110
 
 	u := UID{
 		localID:    uint32(uid >> 28),
@@ -74,7 +77,7 @@ func DecomposeUID(s string) (UID, error) {
 	return u, nil
 }
 
-func FromBase58(s string) (UID, error) {
+func UIDFromBase58(s string) (UID, error) {
 	return DecomposeUID(string(base58.Decode(s)))
 }
 
@@ -83,8 +86,7 @@ func (uid UID) MarshalJSON() ([]byte, error) {
 }
 
 func (uid *UID) UnmarshalJSON(data []byte) error {
-	decodeUID, err := FromBase58(strings.Replace(string(data), "\"", "", -1))
-
+	decodeUID, err := UIDFromBase58(strings.Replace(string(data), "\"", "", -1))
 	if err != nil {
 		return err
 	}
@@ -100,6 +102,7 @@ func (uid *UID) Value() (driver.Value, error) {
 	if uid == nil {
 		return nil, nil
 	}
+
 	return int64(uid.localID), nil
 }
 
@@ -111,24 +114,10 @@ func (uid *UID) Scan(value interface{}) error {
 	var i uint32
 
 	switch t := value.(type) {
-	case int:
-		i = uint32(t)
-	case int8:
-		i = uint32(t) // standardizes across systems
-	case int16:
-		i = uint32(t) // standardizes across systems
-	case int32:
-		i = uint32(t) // standardizes across systems
-	case int64:
-		i = uint32(t) // standardizes across systems
-	case uint8:
-		i = uint32(t) // standardizes across systems
-	case uint16:
-		i = uint32(t) // standardizes across systems
+	case int, int8, int16, int32, int64, uint8, uint16, uint64:
+		i = uint32(reflect.ValueOf(value).Uint())
 	case uint32:
 		i = t
-	case uint64:
-		i = uint32(t)
 	case []byte:
 		a, err := strconv.Atoi(string(t))
 		if err != nil {
@@ -142,19 +131,4 @@ func (uid *UID) Scan(value interface{}) error {
 	*uid = NewUID(i, 0, 1)
 
 	return nil
-}
-
-func (uid *UID) GetBSON() (interface{}, error) {
-	if uid == nil {
-		return nil, nil
-	}
-	return uid.localID, nil
-}
-
-func (uid *UID) SetBSON(raw bson.Raw) error {
-	if len(raw.Data) == 0 {
-		return nil
-	}
-
-	return raw.Unmarshal(&uid.localID)
 }

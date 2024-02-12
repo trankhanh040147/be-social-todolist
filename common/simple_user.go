@@ -13,6 +13,6 @@ func (SimpleUser) TableName() string {
 
 // fea_FakeID
 
-// func (u *SimpleUser) Mask() {
-// 	u.SQLModel.Mask(DbTypeUser)
-// }
+func (u *SimpleUser) Mask() {
+	u.SQLModel.Mask(DbTypeUser)
+}
