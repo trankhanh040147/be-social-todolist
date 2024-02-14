@@ -1,9 +1,9 @@
 package storage
 
 import (
-	"go-200lab-g09/common"
-	"go-200lab-g09/module/item/model"
 	"golang.org/x/net/context"
+	"social-todo-list/common"
+	"social-todo-list/module/item/model"
 	"strings"
 )
 

@@ -1,10 +1,10 @@
 package ginitem
 
 import (
-	"go-200lab-g09/common"
-	"go-200lab-g09/module/item/biz"
-	"go-200lab-g09/module/item/storage"
 	"net/http"
+	"social-todo-list/common"
+	"social-todo-list/module/item/biz"
+	"social-todo-list/module/item/storage"
 	"strconv"
 
 	goservice "github.com/200Lab-Education/go-sdk"

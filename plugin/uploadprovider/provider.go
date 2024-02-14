@@ -3,7 +3,7 @@ package uploadprovider
 import (
 	"context"
 
-	"go-200lab-g09/common"
+	"social-todo-list/common"
 )
 
 type UploadProvider interface {

@@ -2,21 +2,21 @@ package cmd
 
 import (
 	"fmt"
-	"go-200lab-g09/plugin/simple"
 	"log"
 	"os"
+	"social-todo-list/plugin/simple"
 
-	"go-200lab-g09/common"
-	"go-200lab-g09/middleware"
-	ginitem "go-200lab-g09/module/item/transport/gin"
-	ginuserlikeitem "go-200lab-g09/module/userlikeitem/transport"
+	"social-todo-list/common"
+	"social-todo-list/middleware"
+	ginitem "social-todo-list/module/item/transport/gin"
+	ginuserlikeitem "social-todo-list/module/userlikeitem/transport"
 
-	ginupload "go-200lab-g09/module/upload/transport/gin"
-	userstorage "go-200lab-g09/module/user/storage"
-	ginuser "go-200lab-g09/module/user/transport/gin"
-	"go-200lab-g09/plugin/sdkgorm"
-	"go-200lab-g09/plugin/tokenprovider/jwt"
-	"go-200lab-g09/plugin/uploadprovider"
+	ginupload "social-todo-list/module/upload/transport/gin"
+	userstorage "social-todo-list/module/user/storage"
+	ginuser "social-todo-list/module/user/transport/gin"
+	"social-todo-list/plugin/sdkgorm"
+	"social-todo-list/plugin/tokenprovider/jwt"
+	"social-todo-list/plugin/uploadprovider"
 
 	goservice "github.com/200Lab-Education/go-sdk"
 	"github.com/gin-gonic/gin"

@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	"go-200lab-g09/common"
-	"go-200lab-g09/plugin/tokenprovider"
+	"social-todo-list/common"
+	"social-todo-list/plugin/tokenprovider"
 
 	"github.com/dgrijalva/jwt-go"
 )

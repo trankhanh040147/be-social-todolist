@@ -1,7 +1,7 @@
 package main
 
 import (
-	"go-200lab-g09/cmd"
+	"social-todo-list/cmd"
 )
 
 func main() {

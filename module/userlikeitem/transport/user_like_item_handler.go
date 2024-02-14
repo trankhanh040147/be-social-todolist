@@ -1,12 +1,12 @@
 package ginuserlikeitem
 
 import (
-	"go-200lab-g09/common"
-	itemStorage "go-200lab-g09/module/item/storage"
-	"go-200lab-g09/module/userlikeitem/biz"
-	"go-200lab-g09/module/userlikeitem/model"
-	"go-200lab-g09/module/userlikeitem/storage"
 	"net/http"
+	"social-todo-list/common"
+	itemStorage "social-todo-list/module/item/storage"
+	"social-todo-list/module/userlikeitem/biz"
+	"social-todo-list/module/userlikeitem/model"
+	"social-todo-list/module/userlikeitem/storage"
 	"time"
 
 	goservice "github.com/200Lab-Education/go-sdk"

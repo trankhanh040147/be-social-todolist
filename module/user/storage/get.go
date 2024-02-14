@@ -3,8 +3,8 @@ package storage
 import (
 	"context"
 	"errors"
-	"go-200lab-g09/common"
-	"go-200lab-g09/module/user/model"
+	"social-todo-list/common"
+	"social-todo-list/module/user/model"
 
 	"gorm.io/gorm"
 )

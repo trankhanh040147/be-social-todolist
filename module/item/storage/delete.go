@@ -2,7 +2,7 @@ package storage
 
 import (
 	"context"
-	"go-200lab-g09/module/item/model"
+	"social-todo-list/module/item/model"
 )
 
 func (s *sqlStore) DeleteItem(ctx context.Context, cond map[string]interface{}) error {

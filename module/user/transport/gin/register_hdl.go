@@ -1,11 +1,11 @@
 package ginuser
 
 import (
-	"go-200lab-g09/common"
-	"go-200lab-g09/module/user/biz"
-	"go-200lab-g09/module/user/model"
-	"go-200lab-g09/module/user/storage"
 	"net/http"
+	"social-todo-list/common"
+	"social-todo-list/module/user/biz"
+	"social-todo-list/module/user/model"
+	"social-todo-list/module/user/storage"
 
 	goservice "github.com/200Lab-Education/go-sdk"
 	"github.com/gin-gonic/gin"

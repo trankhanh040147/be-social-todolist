@@ -4,7 +4,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
-	"go-200lab-g09/common"
+	"social-todo-list/common"
 )
 
 const EntityName = "User"

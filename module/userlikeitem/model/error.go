@@ -1,6 +1,6 @@
 package model
 
-import "go-200lab-g09/common"
+import "social-todo-list/common"
 
 func ErrCannotLikeItem(err error) *common.AppError {
 	return common.NewCustomError(

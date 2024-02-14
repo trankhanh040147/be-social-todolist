@@ -8,7 +8,7 @@ import (
 
 	glogger "gorm.io/gorm/logger"
 
-	"go-200lab-g09/plugin/sdkgorm/gormdialects"
+	"social-todo-list/plugin/sdkgorm/gormdialects"
 
 	"github.com/200Lab-Education/go-sdk/logger"
 	"gorm.io/gorm"

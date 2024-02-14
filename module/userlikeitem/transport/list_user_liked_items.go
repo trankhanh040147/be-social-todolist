@@ -3,10 +3,10 @@ package ginuserlikeitem
 import (
 	goservice "github.com/200Lab-Education/go-sdk"
 	"github.com/gin-gonic/gin"
-	"go-200lab-g09/common"
-	"go-200lab-g09/module/userlikeitem/biz"
-	"go-200lab-g09/module/userlikeitem/storage"
 	"net/http"
+	"social-todo-list/common"
+	"social-todo-list/module/userlikeitem/biz"
+	"social-todo-list/module/userlikeitem/storage"
 
 	"gorm.io/gorm"
 )

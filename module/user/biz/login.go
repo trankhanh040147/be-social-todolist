@@ -2,9 +2,9 @@ package biz
 
 import (
 	"context"
-	"go-200lab-g09/common"
-	"go-200lab-g09/module/user/model"
-	"go-200lab-g09/plugin/tokenprovider"
+	"social-todo-list/common"
+	"social-todo-list/module/user/model"
+	"social-todo-list/plugin/tokenprovider"
 )
 
 type LoginStorage interface {

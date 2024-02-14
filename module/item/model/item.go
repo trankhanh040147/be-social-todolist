@@ -2,7 +2,7 @@ package model
 
 import (
 	"errors"
-	"go-200lab-g09/common"
+	"social-todo-list/common"
 	"strings"
 )
 

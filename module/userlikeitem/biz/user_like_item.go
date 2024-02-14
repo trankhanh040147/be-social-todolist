@@ -2,9 +2,9 @@ package biz
 
 import (
 	"context"
-	"go-200lab-g09/common"
-	"go-200lab-g09/module/userlikeitem/model"
 	"log"
+	"social-todo-list/common"
+	"social-todo-list/module/userlikeitem/model"
 )
 
 type UserLikeItemStorage interface {

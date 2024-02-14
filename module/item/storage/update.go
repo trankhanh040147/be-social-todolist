@@ -2,9 +2,9 @@ package storage
 
 import (
 	"context"
-	"go-200lab-g09/common"
-	"go-200lab-g09/module/item/model"
 	"gorm.io/gorm"
+	"social-todo-list/common"
+	"social-todo-list/module/item/model"
 )
 
 func (s *sqlStore) UpdateItem(ctx context.Context, cond map[string]interface{}, updateData *model.TodoItemUpdate) error {

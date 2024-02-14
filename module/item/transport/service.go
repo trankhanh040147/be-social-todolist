@@ -2,7 +2,7 @@ package transport
 
 import (
 	"context"
-	"go-200lab-g09/module/item/model"
+	"social-todo-list/module/item/model"
 )
 
 type ItemUsecase interface {

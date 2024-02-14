@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"go-200lab-g09/common"
+	"social-todo-list/common"
 
 	"github.com/gin-gonic/gin"
 )

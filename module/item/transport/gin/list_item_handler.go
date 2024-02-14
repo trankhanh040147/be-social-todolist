@@ -1,12 +1,12 @@
 package ginitem
 
 import (
-	"go-200lab-g09/common"
-	"go-200lab-g09/module/item/biz"
-	"go-200lab-g09/module/item/model"
-	"go-200lab-g09/module/item/repository"
-	"go-200lab-g09/module/item/storage"
-	storage2 "go-200lab-g09/module/userlikeitem/storage"
+	"social-todo-list/common"
+	"social-todo-list/module/item/biz"
+	"social-todo-list/module/item/model"
+	"social-todo-list/module/item/repository"
+	"social-todo-list/module/item/storage"
+	storage2 "social-todo-list/module/userlikeitem/storage"
 
 	"net/http"
 

@@ -1,8 +1,8 @@
 package ginuser
 
 import (
-	"go-200lab-g09/common"
 	"net/http"
+	"social-todo-list/common"
 
 	"github.com/gin-gonic/gin"
 )

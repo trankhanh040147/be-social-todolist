@@ -6,7 +6,7 @@ import (
 	"flag"
 	"fmt"
 
-	"go-200lab-g09/common"
+	"social-todo-list/common"
 
 	"github.com/200Lab-Education/go-sdk/logger"
 	"github.com/aws/aws-sdk-go-v2/aws"

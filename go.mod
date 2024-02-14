@@ -1,4 +1,4 @@
-module go-200lab-g09
+module social-todo-list
 
 go 1.20
 

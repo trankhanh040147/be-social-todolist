@@ -3,9 +3,9 @@ package storage
 import (
 	"context"
 	"errors"
-	"go-200lab-g09/common"
-	"go-200lab-g09/module/userlikeitem/model"
 	"gorm.io/gorm"
+	"social-todo-list/common"
+	"social-todo-list/module/userlikeitem/model"
 )
 
 func (store *sqlStore) Find(ctx context.Context, userId, itemId int) (*model.Like, error) {
