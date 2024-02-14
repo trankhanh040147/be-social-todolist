@@ -4,7 +4,10 @@ import (
 	"go-200lab-g09/common"
 	"go-200lab-g09/module/item/biz"
 	"go-200lab-g09/module/item/model"
+	"go-200lab-g09/module/item/repository"
 	"go-200lab-g09/module/item/storage"
+	storage2 "go-200lab-g09/module/userlikeitem/storage"
+
 	"net/http"
 
 	goservice "github.com/200Lab-Education/go-sdk"
@@ -31,7 +34,9 @@ func ListItem(serviceCtx goservice.ServiceContext) func(ctx *gin.Context) {
 		db := serviceCtx.MustGet(common.PluginDBMain).(*gorm.DB)
 		requester := c.MustGet(common.CurrentUser).(common.Requester)
 		store := storage.NewSQLStore(db)
-		business := biz.NewListItemBiz(store, requester)
+		likeStore := storage2.NewSQLStore(db)
+		repo := repository.NewListItemRepo(store, likeStore, requester)
+		business := biz.NewListItemBiz(repo, requester)
 
 		result, err := business.ListItem(c.Request.Context(), &queryString.Filter, &queryString.Paging)
 
