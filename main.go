@@ -8,6 +8,15 @@ func main() {
 	cmd.Execute()
 }
 
+// RDS Service
+// host: trankhanh-rds.c3kmq2oy4fy8.us-east-1.rds.amazonaws.com
+// user: root
+// password: Trankhanh47
+// port: 3306
+// database: social-todo-list
+
+// MYSQL_GORM_DB_SOURCE_RDS = "root:Trankhanh47@tcp(trankhanh-rds.c3kmq2oy4fy8.us-east-1.rds.amazonaws.com:3306)/social-todo-list?charset=utf8mb4&parseTime=True&loc=Local"
+
 // func main() {
 
 // 	// refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details

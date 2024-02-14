@@ -56,3 +56,27 @@ func (store *sqlStore) ListUsers(ctx context.Context, itemId int, paging *common
 
 	return users, nil
 }
+
+func (store *sqlStore) GetItemLikes(ctx context.Context, ids []int) (map[int]int, error) {
+	result := make(map[int]int)
+
+	type sqlData struct {
+		ItemId int `gorm:"column:item_id"`
+		Count  int `gorm:"column:count"`
+	}
+
+	var likes []sqlData
+	if err := store.db.Table(model.Like{}.TableName()).
+		Select("item_id, Count(item_id) as `count`").
+		Where("item_id in (?)", ids).
+		Group("item_id").
+		Find(&likes).Error; err != nil {
+		return nil, common.ErrDB(err)
+	}
+
+	for _, item := range likes {
+		result[item.ItemId] = item.Count
+	}
+
+	return result, nil
+}

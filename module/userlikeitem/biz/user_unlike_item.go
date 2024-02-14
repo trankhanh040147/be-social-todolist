@@ -2,9 +2,9 @@ package biz
 
 import (
 	"context"
-	"errors"
 	"go-200lab-g09/common"
 	"go-200lab-g09/module/userlikeitem/model"
+	"log"
 )
 
 type UserUnlikeItemStorage interface {
@@ -12,19 +12,22 @@ type UserUnlikeItemStorage interface {
 	Delete(ctx context.Context, userId, itemId int) error
 }
 
-type userUnlikeItemBiz struct {
-	store UserUnlikeItemStorage
+type DecreaseLikedCountStorage interface {
+	DecreaseLikedCount(ctx context.Context, id int) error
 }
 
-func NewUserUnlikeItemBiz(store UserUnlikeItemStorage) *userUnlikeItemBiz {
-	return &userUnlikeItemBiz{store: store}
+type userUnlikeItemBiz struct {
+	store     UserUnlikeItemStorage
+	itemStore DecreaseLikedCountStorage
+}
+
+func NewUserUnlikeItemBiz(store UserUnlikeItemStorage, itemStore DecreaseLikedCountStorage) *userUnlikeItemBiz {
+	return &userUnlikeItemBiz{store: store, itemStore: itemStore}
 }
 
 func (biz *userUnlikeItemBiz) UnlikeItem(ctx context.Context, userId, itemId int) error {
 	_, err := biz.store.Find(ctx, userId, itemId)
-
-	//if err == common.RecordNotFound {
-	if errors.Is(err, common.RecordNotFound) {
+	if err == common.RecordNotFound {
 		return model.ErrDidNotLikeItem(err)
 	}
 
@@ -35,6 +38,14 @@ func (biz *userUnlikeItemBiz) UnlikeItem(ctx context.Context, userId, itemId int
 	if err := biz.store.Delete(ctx, userId, itemId); err != nil {
 		return model.ErrCannotUnlikeItem(err)
 	}
+
+	go func() {
+		defer common.Recovery()
+
+		if err := biz.itemStore.DecreaseLikedCount(ctx, itemId); err != nil {
+			log.Println(err)
+		}
+	}()
 
 	return nil
 }
