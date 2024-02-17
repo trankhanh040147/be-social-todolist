@@ -108,3 +108,16 @@ func (provider *s3Provider) SaveUploadedFile(ctx context.Context, data []byte, d
 
 	return img, nil
 }
+
+func (provider *s3Provider) RemoveUploadedFile(ctx context.Context, dst string) error {
+	params := &s3.DeleteObjectInput{
+		Bucket: aws.String(provider.bucketName),
+		Key:    aws.String(dst),
+	}
+	_, err := provider.client.DeleteObject(context.TODO(), params)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

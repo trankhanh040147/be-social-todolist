@@ -26,7 +26,6 @@ type TodoItem struct {
 	Owner           *common.SimpleUser `json:"owner" gorm:"foreignKey:UserId;"`
 }
 
-// >> Why it do not have receiver like (t TodoItem) ? --> it apply for all TodoItem objects
 func (TodoItem) TableName() string { return "todo_items" }
 
 // fea_FakeID
