@@ -1,0 +1,18 @@
+; MYSQL_GORM_DB_SOURCE=
+; root:my-secret-pw@tcp(127.0.0.1:3309)/social-todo-list?charset=utf8mb4&parseTime=True&loc=Local;
+; MYSQL_GORM_DB_SOURCE=
+; root:my-secret-pw@tcp(my_mysql:3306)/social-todo-list?charset=utf8mb4&parseTime=True&loc=Local;
+; MYSQL_GORM_DB_TYPE=mysql;
+; SECRET=iTaskSecret2024
+; MYSQL_GORM_DB_SOURCE_REMOTE
+; root:Trankhanh47@tcp(trankhanh-rds.c3kmq2oy4fy8.us-east-1.rds.amazonaws.com:3306)/social-todo-list?charset=utf8mb4&parseTime=True&loc=Local
+
+S3_STORAGE_ACCESS_KEY=AKIAZQ3DTRXKCKBEZW54
+S3_STORAGE_SECRET_KEY=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
+S3_STORAGE_REGION=ap-southeast-1
+S3_STORAGE_BUCKET=g09
+S3_STORAGE_ENDPOINT=
+S3_STORAGE_DOMAIN
+
+
+docker run -d --name social-todo -p 3000:3000  -e MYSQL_GORM_DB_SOURCE="root:Trankhanh47@tcp(trankhanh-rds.c3kmq2oy4fy8.us-east-1.rds.amazonaws.com:3306)/social-todo-list?charset=utf8mb4&parseTime=True&loc=Local" -e MYSQL_GORM_DB_TYPE=mysql -e SECRET=iTaskSecret2024 social-todo-service

@@ -5,23 +5,22 @@ import (
 	"log"
 	"os"
 	"social-todo-list/plugin/simple"
+	"social-todo-list/plugin/uploadprovider"
 
 	"social-todo-list/common"
 	"social-todo-list/middleware"
 	ginitem "social-todo-list/module/item/transport/gin"
 	ginuserlikeitem "social-todo-list/module/userlikeitem/transport"
 
+	goservice "github.com/200Lab-Education/go-sdk"
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/cobra"
+	"gorm.io/gorm"
 	ginupload "social-todo-list/module/upload/transport/gin"
 	userstorage "social-todo-list/module/user/storage"
 	ginuser "social-todo-list/module/user/transport/gin"
 	"social-todo-list/plugin/sdkgorm"
 	"social-todo-list/plugin/tokenprovider/jwt"
-	"social-todo-list/plugin/uploadprovider"
-
-	goservice "github.com/200Lab-Education/go-sdk"
-	"github.com/gin-gonic/gin"
-	"github.com/spf13/cobra"
-	"gorm.io/gorm"
 )
 
 func newService() goservice.Service {
@@ -30,7 +29,8 @@ func newService() goservice.Service {
 		goservice.WithVersion("1.0.0"),
 		goservice.WithInitRunnable(sdkgorm.NewGormDB("main.mysql", common.PluginDBMain)),
 		goservice.WithInitRunnable(jwt.NewJWTProvider(common.PluginJWT)),
-		goservice.WithInitRunnable(uploadprovider.NewR2Provider(common.PluginR2)),
+		//goservice.WithInitRunnable(uploadprovider.NewR2Provider(common.PluginR2)),
+		goservice.WithInitRunnable(uploadprovider.NewS3Provider(common.PluginS3)),
 		goservice.WithInitRunnable(simple.NewSimplePlugin("simple")),
 	)
 
@@ -67,9 +67,9 @@ var rootCmd = &cobra.Command{
 				v1.POST("/login", ginuser.Login(service))
 				v1.GET("/profile", authMiddleware, ginuser.Profile())
 
-				uploads := v1.Group("/upload", authMiddleware)
+				uploads := v1.Group("/upload")
 				{
-					// uploads.POST("", ginupload.Upload())
+					uploads.POST("", ginupload.Upload(service))
 					uploads.POST("/local", ginupload.UploadLocal(service))
 				}
 

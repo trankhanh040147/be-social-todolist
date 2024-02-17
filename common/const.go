@@ -17,6 +17,7 @@ const (
 	PluginDBMain = "mysql"
 	PluginJWT    = "jwt"
 	PluginR2     = "r2"
+	PluginS3     = "s3"
 )
 
 func Recovery() {
