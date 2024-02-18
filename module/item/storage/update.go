@@ -19,7 +19,7 @@ func (s *sqlStore) UpdateItem(ctx context.Context, cond map[string]interface{}, 
 func (store *sqlStore) IncreaseLikedCount(ctx context.Context, id int) error {
 	if err := store.db.Table(model.TodoItem{}.TableName()).
 		Where("id = ?", id).
-		Update("liked_count ", gorm.Expr("liked_count + ?", 1)).
+		Update("liked_count", gorm.Expr("liked_count + ?", 1)).
 		Error; err != nil {
 		return common.ErrDB(err)
 	}
