@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"social-todo-list/common"
+	"social-todo-list/common/asyncjob"
 	"social-todo-list/module/userlikeitem/model"
 )
 
@@ -39,13 +40,16 @@ func (biz *userUnlikeItemBiz) UnlikeItem(ctx context.Context, userId, itemId int
 		return model.ErrCannotUnlikeItem(err)
 	}
 
-	go func() {
-		defer common.Recovery()
-
+	job := asyncjob.NewJob(func(ctx context.Context) error {
 		if err := biz.itemStore.DecreaseLikedCount(ctx, itemId); err != nil {
-			log.Println(err)
+			return err
 		}
-	}()
+		return nil
+	}, asyncjob.WithName("job DecreaseLikedCount"))
+
+	if err := asyncjob.NewGroup(true, job).Run(ctx); err != nil {
+		log.Println(err)
+	}
 
 	return nil
 }

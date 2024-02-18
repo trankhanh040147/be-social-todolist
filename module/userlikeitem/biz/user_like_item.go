@@ -3,7 +3,7 @@ package biz
 import (
 	"context"
 	"log"
-	"social-todo-list/common"
+	"social-todo-list/common/asyncjob"
 	"social-todo-list/module/userlikeitem/model"
 )
 
@@ -29,13 +29,16 @@ func (biz *userLikeItemBiz) LikeItem(ctx context.Context, data *model.Like) erro
 		return model.ErrCannotLikeItem(err)
 	}
 
-	go func() {
-		defer common.Recovery()
-
+	job := asyncjob.NewJob(func(ctx context.Context) error {
 		if err := biz.itemStore.IncreaseLikedCount(ctx, data.ItemId); err != nil {
-			log.Println(err)
+			return err
 		}
-	}()
+		return nil
+	}, asyncjob.WithName("job IncreaseLikedCount"))
+
+	if err := asyncjob.NewGroup(true, job).Run(ctx); err != nil {
+		log.Println(err)
+	}
 
 	return nil
 }
