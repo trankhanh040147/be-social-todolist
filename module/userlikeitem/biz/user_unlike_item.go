@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 	"social-todo-list/common"
-	"social-todo-list/common/asyncjob"
 	"social-todo-list/module/userlikeitem/model"
+	"social-todo-list/pubsub"
 )
 
 type UserUnlikeItemStorage interface {
@@ -13,17 +13,13 @@ type UserUnlikeItemStorage interface {
 	Delete(ctx context.Context, userId, itemId int) error
 }
 
-type DecreaseLikedCountStorage interface {
-	DecreaseLikedCount(ctx context.Context, id int) error
-}
-
 type userUnlikeItemBiz struct {
-	store     UserUnlikeItemStorage
-	itemStore DecreaseLikedCountStorage
+	store UserUnlikeItemStorage
+	ps    pubsub.PubSub
 }
 
-func NewUserUnlikeItemBiz(store UserUnlikeItemStorage, itemStore DecreaseLikedCountStorage) *userUnlikeItemBiz {
-	return &userUnlikeItemBiz{store: store, itemStore: itemStore}
+func NewUserUnlikeItemBiz(store UserUnlikeItemStorage, ps pubsub.PubSub) *userUnlikeItemBiz {
+	return &userUnlikeItemBiz{store: store, ps: ps}
 }
 
 func (biz *userUnlikeItemBiz) UnlikeItem(ctx context.Context, userId, itemId int) error {
@@ -40,14 +36,12 @@ func (biz *userUnlikeItemBiz) UnlikeItem(ctx context.Context, userId, itemId int
 		return model.ErrCannotUnlikeItem(err)
 	}
 
-	job := asyncjob.NewJob(func(ctx context.Context) error {
-		if err := biz.itemStore.DecreaseLikedCount(ctx, itemId); err != nil {
-			return err
-		}
-		return nil
-	}, asyncjob.WithName("job DecreaseLikedCount"))
+	msg := pubsub.NewMessage(&model.Like{
+		UserId: userId,
+		ItemId: itemId,
+	})
 
-	if err := asyncjob.NewGroup(true, job).Run(ctx); err != nil {
+	if err := biz.ps.Publish(ctx, common.TopicUserUnlikedItem, msg); err != nil {
 		log.Println(err)
 	}
 
