@@ -18,6 +18,10 @@ const (
 	PluginJWT    = "jwt"
 	PluginR2     = "r2"
 	PluginS3     = "s3"
+	PluginPubSub = "pubsub"
+
+	TopicUserLikedItem   = "TopicUserLikedItem"
+	TopicUserUnlikedItem = "TopicUserUnlikedItem"
 )
 
 func Recovery() {

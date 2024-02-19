@@ -13,3 +13,6 @@ type Like struct {
 }
 
 func (Like) TableName() string { return "user_like_items" }
+
+func (l *Like) GetItemId() int { return l.ItemId }
+func (l *Like) GetUserId() int { return l.UserId }

@@ -3,10 +3,10 @@ package ginuserlikeitem
 import (
 	"net/http"
 	"social-todo-list/common"
-	itemStorage "social-todo-list/module/item/storage"
 	"social-todo-list/module/userlikeitem/biz"
 	"social-todo-list/module/userlikeitem/model"
 	"social-todo-list/module/userlikeitem/storage"
+	"social-todo-list/pubsub"
 	"time"
 
 	goservice "github.com/200Lab-Education/go-sdk"
@@ -24,10 +24,10 @@ func LikeItem(serviceCtx goservice.ServiceContext) gin.HandlerFunc {
 
 		requester := ctx.MustGet(common.CurrentUser).(common.Requester)
 		db := serviceCtx.MustGet(common.PluginDBMain).(*gorm.DB)
+		ps := serviceCtx.MustGet(common.PluginPubSub).(pubsub.PubSub)
 
 		store := storage.NewSQLStore(db)
-		itemStore := itemStorage.NewSQLStore(db)
-		business := biz.NewUserLikeItemBiz(store, itemStore)
+		business := biz.NewUserLikeItemBiz(store, ps)
 		now := time.Now().UTC()
 
 		if err := business.LikeItem(ctx.Request.Context(), &model.Like{

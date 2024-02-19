@@ -3,8 +3,9 @@ package biz
 import (
 	"context"
 	"log"
-	"social-todo-list/common/asyncjob"
+	"social-todo-list/common"
 	"social-todo-list/module/userlikeitem/model"
+	"social-todo-list/pubsub"
 )
 
 type UserLikeItemStorage interface {
@@ -16,12 +17,12 @@ type IncreaseLikedCountStorage interface {
 }
 
 type userLikeItemBiz struct {
-	store     UserLikeItemStorage
-	itemStore IncreaseLikedCountStorage
+	store UserLikeItemStorage
+	ps    pubsub.PubSub
 }
 
-func NewUserLikeItemBiz(store UserLikeItemStorage, itemStore IncreaseLikedCountStorage) *userLikeItemBiz {
-	return &userLikeItemBiz{store: store, itemStore: itemStore}
+func NewUserLikeItemBiz(store UserLikeItemStorage, ps pubsub.PubSub) *userLikeItemBiz {
+	return &userLikeItemBiz{store: store, ps: ps}
 }
 
 func (biz *userLikeItemBiz) LikeItem(ctx context.Context, data *model.Like) error {
@@ -29,14 +30,7 @@ func (biz *userLikeItemBiz) LikeItem(ctx context.Context, data *model.Like) erro
 		return model.ErrCannotLikeItem(err)
 	}
 
-	job := asyncjob.NewJob(func(ctx context.Context) error {
-		if err := biz.itemStore.IncreaseLikedCount(ctx, data.ItemId); err != nil {
-			return err
-		}
-		return nil
-	}, asyncjob.WithName("job IncreaseLikedCount"))
-
-	if err := asyncjob.NewGroup(true, job).Run(ctx); err != nil {
+	if err := biz.ps.Publish(ctx, common.TopicUserLikedItem, pubsub.NewMessage(data)); err != nil {
 		log.Println(err)
 	}
 
