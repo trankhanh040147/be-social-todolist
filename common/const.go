@@ -19,6 +19,8 @@ const (
 	CurrentUser   = "current_user"
 	PluginPubSub  = "pubsub"
 	PluginItemAPI = "item-api"
+  TopicUserLikedItem   = "TopicUserLikedItem"
+	TopicUserUnlikedItem = "TopicUserUnlikedItem"
 )
 
 func Recovery() {
