@@ -6,6 +6,8 @@ import (
 	"os"
 	"social-todo-list/plugin/simple"
 	"social-todo-list/plugin/uploadprovider"
+	"social-todo-list/pubsub"
+	subscriber "social-todo-list/subcriber"
 
 	"social-todo-list/common"
 	"social-todo-list/middleware"
@@ -32,6 +34,7 @@ func newService() goservice.Service {
 		//goservice.WithInitRunnable(uploadprovider.NewR2Provider(common.PluginR2)),
 		goservice.WithInitRunnable(uploadprovider.NewS3Provider(common.PluginS3)),
 		goservice.WithInitRunnable(simple.NewSimplePlugin("simple")),
+		goservice.WithInitRunnable(pubsub.NewPubSub(common.PluginPubSub)),
 	)
 
 	return service
@@ -88,6 +91,8 @@ var rootCmd = &cobra.Command{
 
 			}
 		})
+
+		_ = subscriber.NewPBEngine(service).Start()
 
 		if err := service.Start(); err != nil {
 			serviceLogger.Fatalln(err)

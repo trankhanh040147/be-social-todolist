@@ -1,13 +1,13 @@
 FROM golang:1.20-alpine as builder
 ADD . /app/
 WORKDIR /app
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o iTaskDemo .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o social-todo-service .
 
 FROM alpine
 WORKDIR /app/
-COPY --from=builder /app/iTaskDemo .
+COPY --from=builder /app/social-todo-service .
 #EXPOSE
-ENTRYPOINT ["/app/iTaskDemo"]
+ENTRYPOINT ["/app/social-todo-service"]
 
 #docker build -t social-todo-service:1.0 .
 
