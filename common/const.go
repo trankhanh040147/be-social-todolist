@@ -4,8 +4,6 @@ import (
 	"fmt"
 )
 
-const CurrentUser = "current_user"
-
 type DbType int
 
 const (
@@ -14,10 +12,13 @@ const (
 )
 
 const (
-	PluginDBMain = "mysql"
-	PluginJWT    = "jwt"
-	PluginR2     = "r2"
-	PluginS3     = "s3"
+	PluginDBMain  = "mysql"
+	PluginJWT     = "jwt"
+	PluginR2      = "r2"
+	PluginS3      = "s3"
+	CurrentUser   = "current_user"
+	PluginPubSub  = "pubsub"
+	PluginItemAPI = "item-api"
 )
 
 func Recovery() {

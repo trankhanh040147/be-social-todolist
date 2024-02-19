@@ -1,1 +1,0 @@
-docker run -d --name social-todo -p 3000:3000 -e MYSQL_GORM_DB_TYPE=mysql -e MYSQL_GORM_DB_SOURCE="root:my-secret-pw@tcp(my_mysql:3306)/social-todo-list?charset=utf8mb4&parseTime=True&loc=Local" -e SECRET=iTaskSecret2024 --network social-net social-todo-service:1.0

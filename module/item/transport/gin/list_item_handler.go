@@ -1,14 +1,13 @@
 package ginitem
 
 import (
+	"net/http"
 	"social-todo-list/common"
 	"social-todo-list/module/item/biz"
 	"social-todo-list/module/item/model"
 	"social-todo-list/module/item/repository"
 	"social-todo-list/module/item/storage"
-	storage2 "social-todo-list/module/userlikeitem/storage"
-
-	"net/http"
+	"social-todo-list/module/item/storage/rpc"
 
 	goservice "github.com/200Lab-Education/go-sdk"
 	"github.com/gin-gonic/gin"
@@ -31,10 +30,13 @@ func ListItem(serviceCtx goservice.ServiceContext) func(ctx *gin.Context) {
 
 		queryString.Paging.Process()
 
-		db := serviceCtx.MustGet(common.PluginDBMain).(*gorm.DB)
 		requester := c.MustGet(common.CurrentUser).(common.Requester)
+		db := serviceCtx.MustGet(common.PluginDBMain).(*gorm.DB)
+		apiItemCaller := serviceCtx.MustGet(common.PluginItemAPI).(interface {
+			GetServiceURL() string
+		})
 		store := storage.NewSQLStore(db)
-		likeStore := storage2.NewSQLStore(db)
+		likeStore := rpc.NewItemService(apiItemCaller.GetServiceURL(), serviceCtx.Logger("rpc.itemlikes"))
 		repo := repository.NewListItemRepo(store, likeStore, requester)
 		business := biz.NewListItemBiz(repo, requester)
 

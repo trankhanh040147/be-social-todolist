@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	rpcuserlikeitem "social-todo-list/module/userlikeitem/transport/rpc"
+	"social-todo-list/plugin/rpccaller"
 	"social-todo-list/plugin/simple"
 	"social-todo-list/plugin/uploadprovider"
 
@@ -32,6 +34,7 @@ func newService() goservice.Service {
 		//goservice.WithInitRunnable(uploadprovider.NewR2Provider(common.PluginR2)),
 		goservice.WithInitRunnable(uploadprovider.NewS3Provider(common.PluginS3)),
 		goservice.WithInitRunnable(simple.NewSimplePlugin("simple")),
+		goservice.WithInitRunnable(rpccaller.NewApiItemCaller(common.PluginItemAPI)),
 	)
 
 	return service
@@ -84,6 +87,11 @@ var rootCmd = &cobra.Command{
 					items.POST("/:id/like", ginuserlikeitem.LikeItem(service))
 					items.DELETE("/:id/unlike", ginuserlikeitem.UnlikeItem(service))
 					items.GET("/:id/liked-users", ginuserlikeitem.ListLikedUsers(service))
+				}
+
+				rpc := v1.Group("/rpc")
+				{
+					rpc.POST("/get_item_likes", rpcuserlikeitem.GetItemLikes(service))
 				}
 
 			}
