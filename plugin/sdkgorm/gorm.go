@@ -5,6 +5,7 @@ import (
 	"flag"
 	"strings"
 	"sync"
+	"time"
 
 	glogger "gorm.io/gorm/logger"
 
@@ -122,7 +123,14 @@ func (gdb *gormDB) Get() interface{} {
 		return gdb.db.Session(&gorm.Session{NewDB: true}).Debug()
 	}
 
-	return gdb.db.Session(&gorm.Session{NewDB: true, Logger: gdb.db.Logger.LogMode(glogger.Silent)})
+	newDBSession := gdb.db.Session(&gorm.Session{NewDB: true, Logger: gdb.db.Logger.LogMode(glogger.Silent)})
+	if db, err := newDBSession.DB(); err != nil {
+		db.SetMaxOpenConns(100)
+		db.SetMaxIdleConns(100)
+		db.SetConnMaxIdleTime(time.Hour)
+	}
+
+	return newDBSession
 }
 
 func getDBType(dbType string) GormDBType {
