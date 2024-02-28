@@ -36,7 +36,7 @@ func (s *itemService) GetItemLikes(ctx context.Context, ids []int) (map[int]int,
 		SetHeader("Content-Type", "application/json").
 		SetBody(requestBody{Ids: ids}).
 		SetResult(&response).
-		Post(fmt.Sprintf("%s/%s", s.serviceURL, "v1/rpc/get_item_likes"))
+		Post(fmt.Sprintf("%s/%s", s.serviceURL, "api/v1/rpc/get_item_likes"))
 
 	if err != nil {
 		s.logger.Errorln(err)
