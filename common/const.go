@@ -12,14 +12,15 @@ const (
 )
 
 const (
-	PluginDBMain  = "mysql"
-	PluginJWT     = "jwt"
-	PluginR2      = "r2"
-	PluginS3      = "s3"
-	CurrentUser   = "current_user"
-	PluginPubSub  = "pubsub"
-	PluginItemAPI = "item-api"
-  TopicUserLikedItem   = "TopicUserLikedItem"
+	PluginDBMain         = "mysql"
+	PluginJWT            = "jwt"
+	PluginR2             = "r2"
+	PluginS3             = "s3"
+	CurrentUser          = "current_user"
+	PluginPubSub         = "pubsub"
+	PluginItemAPI        = "item-api"
+	PluginTracerJaeger   = "social-todo-jaeger"
+	TopicUserLikedItem   = "TopicUserLikedItem"
 	TopicUserUnlikedItem = "TopicUserUnlikedItem"
 )
 

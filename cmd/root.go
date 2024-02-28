@@ -7,6 +7,7 @@ import (
 	rpcuserlikeitem "social-todo-list/module/userlikeitem/transport/rpc"
 	"social-todo-list/plugin/rpccaller"
 	"social-todo-list/plugin/simple"
+	"social-todo-list/plugin/tracer"
 	"social-todo-list/plugin/uploadprovider"
 	"social-todo-list/pubsub"
 	subscriber "social-todo-list/subcriber"
@@ -37,8 +38,8 @@ func newService() goservice.Service {
 		goservice.WithInitRunnable(uploadprovider.NewS3Provider(common.PluginS3)),
 		goservice.WithInitRunnable(simple.NewSimplePlugin("simple")),
 		goservice.WithInitRunnable(rpccaller.NewApiItemCaller(common.PluginItemAPI)),
-    goservice.WithInitRunnable(pubsub.NewPubSub(common.PluginPubSub)),
-
+		goservice.WithInitRunnable(pubsub.NewPubSub(common.PluginPubSub)),
+		goservice.WithInitRunnable(tracer.NewJaeger(common.PluginTracerJaeger)),
 	)
 
 	return service
