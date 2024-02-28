@@ -1,22 +1,20 @@
 package ginitem
 
 import (
+	goservice "github.com/200Lab-Education/go-sdk"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"net/http"
 	"social-todo-list/common"
 	"social-todo-list/module/item/biz"
 	"social-todo-list/module/item/model"
 	"social-todo-list/module/item/storage"
-	"strconv"
-
-	goservice "github.com/200Lab-Education/go-sdk"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 func UpdateItem(serviceCtx goservice.ServiceContext) func(ctx *gin.Context) {
 	return func(c *gin.Context) {
 		var data model.TodoItemUpdate
-		id, err := strconv.Atoi(c.Param("id"))
+		id, err := common.UIDFromBase58(c.Param("id"))
 
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
@@ -39,7 +37,7 @@ func UpdateItem(serviceCtx goservice.ServiceContext) func(ctx *gin.Context) {
 		store := storage.NewSQLStore(db)
 		business := biz.NewUpdateItemBiz(store, requester)
 
-		if err := business.UpdateItemById(c.Request.Context(), id, &data); err != nil {
+		if err := business.UpdateItemById(c.Request.Context(), int(id.GetLocalID()), &data); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
 				"error": err.Error(),
 			})
