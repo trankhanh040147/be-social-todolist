@@ -7,7 +7,7 @@ import (
 )
 
 type DeleteItemStorage interface {
-	GetItem(ctx context.Context, cond map[string]interface{}) (*model.TodoItem, error)
+	GetItem(ctx context.Context, cond map[string]interface{}, moreKeys ...string) (*model.TodoItem, error)
 	DeleteItem(ctx context.Context, cond map[string]interface{}) error
 }
 

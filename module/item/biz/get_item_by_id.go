@@ -7,7 +7,7 @@ import (
 )
 
 type GetItemStorage interface {
-	GetItem(ctx context.Context, cond map[string]interface{}) (*model.TodoItem, error)
+	GetItem(ctx context.Context, cond map[string]interface{}, moreKeys ...string) (*model.TodoItem, error)
 }
 
 type getItemBiz struct {
@@ -19,7 +19,7 @@ func NewGetItemBiz(store GetItemStorage) *getItemBiz {
 }
 
 func (biz *getItemBiz) GetItemById(ctx context.Context, id int) (*model.TodoItem, error) {
-	data, err := biz.store.GetItem(ctx, map[string]interface{}{"id": id})
+	data, err := biz.store.GetItem(ctx, map[string]interface{}{"id": id}, "Owner")
 
 	if err != nil {
 		return nil, common.ErrCannotGetEntity(model.EntityName, err)

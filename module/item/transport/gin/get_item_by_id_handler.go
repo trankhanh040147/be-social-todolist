@@ -29,6 +29,8 @@ func GetItem(serviceCtx goservice.ServiceContext) func(ctx *gin.Context) {
 			panic(err)
 		}
 
+		data.Mask()
+
 		ctx.JSON(http.StatusOK, common.SimpleSuccessResponse(data))
 	}
 }

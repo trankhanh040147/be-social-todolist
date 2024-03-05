@@ -8,7 +8,7 @@ import (
 )
 
 type UpdateItemStorage interface {
-	GetItem(ctx context.Context, cond map[string]interface{}) (*model.TodoItem, error)
+	GetItem(ctx context.Context, cond map[string]interface{}, moreKeys ...string) (*model.TodoItem, error)
 	UpdateItem(ctx context.Context, cond map[string]interface{}, dataUpdate *model.TodoItemUpdate) error
 }
 
