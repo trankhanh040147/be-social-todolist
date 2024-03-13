@@ -84,7 +84,7 @@ func (j *jaeger) Configure() error {
 	url := fmt.Sprintf("%s:%d", j.agentURI, j.port)
 
 	je, err := jg.NewExporter(jg.Options{
-		AgentEndpoint: url,
+		AgentEndpoint: "localhost:6831",
 		Process: jg.Process{
 			ServiceName: j.processName,
 		},

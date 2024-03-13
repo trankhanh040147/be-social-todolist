@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"errors"
+	"go.opencensus.io/trace"
 	"social-todo-list/common"
 	"social-todo-list/module/user/model"
 
@@ -10,6 +11,9 @@ import (
 )
 
 func (s *sqlStore) FindUser(ctx context.Context, conditions map[string]interface{}, moreInfo ...string) (*model.User, error) {
+	_, span := trace.StartSpan(ctx, "user.storage.find")
+	defer span.End()
+
 	db := s.db.Table(model.User{}.TableName())
 
 	for i := range moreInfo {
